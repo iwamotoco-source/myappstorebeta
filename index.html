@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>AppVault</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===== Apple Design Token ===== */
+:root {
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --font: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', sans-serif;
+  --transition: 0.28s cubic-bezier(0.25,0.46,0.45,0.94);
+  --type-html: #5e5ce6;
+  --type-url:  #32ade6;
+  --type-bm:   #ff9f0a;
+  --type-pwa:  #30d158;
+  --danger:    #ff453a;
+  --warn:      #ffd60a;
+  --success:   #30d158;
+}
+
+/* ===== Dark Theme ===== */
+[data-theme="dark"] {
+  --bg:          #000000;
+  --bg2:         #1c1c1e;
+  --bg3:         #2c2c2e;
+  --bg4:         #3a3a3c;
+  --text:        #ffffff;
+  --text2:       rgba(235,235,245,0.6);
+  --text3:       rgba(235,235,245,0.3);
+  --accent:      #0a84ff;
+  --accent2:     #5e5ce6;
+  --sep:         rgba(255,255,255,0.1);
+  --card:        #1c1c1e;
+  --card2:       #2c2c2e;
+  --input-bg:    #1c1c1e;
+  --modal-bg:    rgba(0,0,0,0.75);
+  --blur:        saturate(180%) blur(20px);
+  --shadow-card: 0 2px 20px rgba(0,0,0,0.5);
+  --shadow-lg:   0 8px 40px rgba(0,0,0,0.7);
+  --header-glass: rgba(28,28,30,0.85);
+}
+
+/* ===== Light Theme ===== */
+[data-theme="light"] {
+  --bg:          #f2f2f7;
+  --bg2:         #ffffff;
+  --bg3:         #f2f2f7;
+  --bg4:         #e5e5ea;
+  --text:        #000000;
+  --text2:       rgba(60,60,67,0.6);
+  --text3:       rgba(60,60,67,0.3);
+  --accent:      #007aff;
+  --accent2:     #5856d6;
+  --sep:         rgba(60,60,67,0.12);
+  --card:        #ffffff;
+  --card2:       #f2f2f7;
+  --input-bg:    #f2f2f7;
+  --modal-bg:    rgba(0,0,0,0.45);
+  --blur:        saturate(180%) blur(20px);
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg:   0 8px 40px rgba(0,0,0,0.18);
+  --header-glass: rgba(242,242,247,0.85);
+}
+
+/* ===== Base ===== */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100dvh;
+  transition: background var(--transition), color var(--transition);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+/* ===== Header ===== */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: var(--header-glass);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-bottom: 0.5px solid var(--sep);
+  padding: env(safe-area-inset-top, 0) 0 0;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-icon {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(145deg, #0a84ff, #5e5ce6);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 2px 8px rgba(10,132,255,0.4);
+  flex-shrink: 0;
+}
+.logo-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
+}
+.logo-text span {
+  color: var(--accent);
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.db-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg3);
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 0.72rem;
+  color: var(--text2);
+  border: 0.5px solid var(--sep);
+}
+.db-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--text3);
+  transition: background 0.3s;
+}
+.db-dot.online  { background: var(--success); box-shadow: 0 0 6px var(--success); }
+.db-dot.offline { background: var(--danger); }
+.db-dot.loading { background: var(--warn); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.count-pill {
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.2px;
+}
+.hd-icon-btn {
+  width: 34px;
+  height: 34px;
+  background: var(--bg3);
+  border: 0.5px solid var(--sep);
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background var(--transition);
+  color: var(--text);
+}
+.hd-icon-btn:hover { background: var(--bg4); }
+.hd-icon-btn:active { transform: scale(0.93); }
+
+/* ===== Search Bar ===== */
+.search-section {
+  background: var(--header-glass);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-bottom: 0.5px solid var(--sep);
+  padding: 10px 20px 12px;
+}
+.search-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.search-wrap {
+  flex: 1;
+  min-width: 160px;
+  position: relative;
+}
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--text3);
+  pointer-events: none;
+}
+.search-wrap input {
+  width: 100%;
+  background: var(--bg3);
+  border: 0.5px solid var(--sep);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px 9px 34px;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color var(--transition), background var(--transition);
+}
+.search-wrap input::placeholder { color: var(--text3); }
+.search-wrap input:focus {
+  border-color: var(--accent);
+  background: var(--bg2);
+}
+.search-section select {
+  background: var(--bg3);
+  border: 0.5px solid var(--sep);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: var(--font);
+  outline: none;
+  cursor: pointer;
+}
+
+/* ===== Segment Control (Filter) ===== */
+.segment-wrap {
+  width: 100%;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 1px;
+}
+.segment-wrap::-webkit-scrollbar { display: none; }
+.seg-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font);
+  border: 0.5px solid var(--sep);
+  background: var(--bg3);
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s;
+  flex-shrink: 0;
+}
+.seg-btn:active { transform: scale(0.95); }
+.seg-btn.seg-all  .seg-dot { display: none; }
+.seg-btn.seg-html .seg-dot { background: var(--type-html); }
+.seg-btn.seg-url  .seg-dot { background: var(--type-url); }
+.seg-btn.seg-bm   .seg-dot { background: var(--type-bm); }
+.seg-btn.seg-pwa  .seg-dot { background: var(--type-pwa); }
+.seg-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.seg-btn.active-all  { background: var(--accent); color: #fff; border-color: transparent; box-shadow: 0 2px 10px rgba(10,132,255,0.35); }
+.seg-btn.active-html { background: var(--type-html); color: #fff; border-color: transparent; box-shadow: 0 2px 10px rgba(94,92,230,0.35); }
+.seg-btn.active-url  { background: var(--type-url);  color: #fff; border-color: transparent; box-shadow: 0 2px 10px rgba(50,173,230,0.35); }
+.seg-btn.active-bm   { background: var(--type-bm);   color: #fff; border-color: transparent; box-shadow: 0 2px 10px rgba(255,159,10,0.35); }
+.seg-btn.active-pwa  { background: var(--type-pwa);  color: #fff; border-color: transparent; box-shadow: 0 2px 10px rgba(48,209,88,0.35); }
+.btn-new-folder {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font);
+  border: 0.5px solid var(--sep);
+  background: var(--bg3);
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.18s;
+}
+.btn-new-folder:hover { border-color: var(--warn); color: var(--warn); background: rgba(255,214,10,0.08); }
+.btn-new-folder:active { transform: scale(0.95); }
+
+/* ===== Main Grid ===== */
+main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 16px 100px;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 24px 0 12px;
+}
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+.section-count {
+  font-size: 0.78rem;
+  color: var(--text2);
+  background: var(--bg3);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 0.5px solid var(--sep);
+  font-weight: 600;
+}
+.section-line {
+  flex: 1;
+  height: 0.5px;
+  background: var(--sep);
+}
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+/* ===== Folder Card ===== */
+.folder-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 0.5px solid var(--sep);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  box-shadow: var(--shadow-card);
+}
+.folder-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(255,214,10,0.4);
+}
+.folder-card:active { transform: scale(0.97); }
+.folder-card.drag-over {
+  border-color: var(--warn);
+  background: rgba(255,214,10,0.04);
+}
+.folder-header {
+  padding: 16px 16px 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.folder-emoji {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(145deg, var(--bg3), var(--bg4));
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border: 0.5px solid var(--sep);
+  flex-shrink: 0;
+}
+.folder-info {}
+.folder-name  { font-size: 1rem; font-weight: 700; letter-spacing: -0.2px; }
+.folder-count { font-size: 0.75rem; color: var(--text2); margin-top: 2px; }
+.folder-thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+  padding: 0 12px 12px;
+}
+.thumb-cell {
+  aspect-ratio: 1;
+  border-radius: var(--radius-xs);
+  background: var(--bg3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border: 0.5px solid var(--sep);
+}
+.thumb-cell.empty { opacity: 0.3; }
+.folder-footer {
+  padding: 8px 12px;
+  border-top: 0.5px solid var(--sep);
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+/* ===== App Card ===== */
+.app-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 0.5px solid var(--sep);
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  box-shadow: var(--shadow-card);
+  position: relative;
+}
+.app-card:hover { transform: translateY(-3px) scale(1.01); box-shadow: var(--shadow-lg); }
+.app-card:active { transform: scale(0.97); }
+.app-card.type-html:hover { border-color: rgba(94,92,230,0.4); }
+.app-card.type-url:hover  { border-color: rgba(50,173,230,0.4); }
+.app-card.type-bm:hover   { border-color: rgba(255,159,10,0.4); }
+.app-card.type-pwa:hover  { border-color: rgba(48,209,88,0.4); }
+.app-card.dragging { opacity: 0.4; transform: scale(0.96); }
+.drag-hint {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 10px;
+  color: var(--text3);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  background: var(--bg3);
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 0.5px solid var(--sep);
+}
+.app-card:hover .drag-hint { opacity: 0.8; }
+.type-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 0.5px solid transparent;
+  backdrop-filter: blur(8px);
+}
+.type-badge.html { background: rgba(94,92,230,0.18);  color: var(--type-html); border-color: rgba(94,92,230,0.35); }
+.type-badge.url  { background: rgba(50,173,230,0.18); color: var(--type-url);  border-color: rgba(50,173,230,0.35); }
+.type-badge.bm   { background: rgba(255,159,10,0.18); color: var(--type-bm);   border-color: rgba(255,159,10,0.35); }
+.type-badge.pwa  { background: rgba(48,209,88,0.18);  color: var(--type-pwa);  border-color: rgba(48,209,88,0.35); }
+.card-art {
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  position: relative;
+  overflow: hidden;
+}
+.card-art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+}
+.card-art.html-bg::before { background: radial-gradient(circle at 60% 40%, var(--type-html), transparent 70%); }
+.card-art.url-bg::before  { background: radial-gradient(circle at 60% 40%, var(--type-url),  transparent 70%); }
+.card-art.bm-bg::before   { background: radial-gradient(circle at 60% 40%, var(--type-bm),   transparent 70%); }
+.card-art.pwa-bg::before  { background: radial-gradient(circle at 60% 40%, var(--type-pwa),  transparent 70%); }
+.card-art-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 1.5rem;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  backdrop-filter: blur(4px);
+}
+.app-card:hover .card-art-overlay { opacity: 1; }
+.card-body {
+  padding: 12px 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.card-name { font-size: 0.95rem; font-weight: 700; letter-spacing: -0.2px; }
+.card-desc { font-size: 0.8rem; color: var(--text2); line-height: 1.4; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-url-text  { font-size: 0.7rem; color: var(--type-url);  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.9; }
+.card-pwa-text  { font-size: 0.7rem; color: var(--type-pwa);  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.9; }
+.card-date { font-size: 0.68rem; color: var(--text3); margin-top: 2px; }
+.bm-drag-row {
+  margin: 6px 12px 0;
+  padding: 7px 10px;
+  background: rgba(255,159,10,0.06);
+  border: 0.5px dashed rgba(255,159,10,0.35);
+  border-radius: var(--radius-xs);
+  font-size: 0.72rem;
+  color: var(--type-bm);
+  text-align: center;
+}
+.bm-drag-link {
+  display: inline-block;
+  padding: 3px 10px;
+  background: rgba(255,159,10,0.15);
+  border-radius: 6px;
+  color: var(--type-bm);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: grab;
+  border: 0.5px solid rgba(255,159,10,0.3);
+  font-size: 0.76rem;
+}
+.card-footer {
+  padding: 8px 10px;
+  border-top: 0.5px solid var(--sep);
+  display: flex;
+  gap: 2px;
+  justify-content: flex-end;
+  align-items: center;
+}
+.icon-action {
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.icon-action:hover { background: var(--bg3); color: var(--text); }
+.icon-action:active { transform: scale(0.9); }
+.icon-action.del:hover { background: rgba(255,69,58,0.12); color: var(--danger); }
+
+/* ===== Empty State ===== */
+.empty-state {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text2);
+}
+.empty-icon { font-size: 64px; margin-bottom: 16px; }
+.empty-title { font-size: 1.3rem; font-weight: 700; color: var(--text); margin-bottom: 8px; letter-spacing: -0.3px; }
+.empty-sub   { font-size: 0.88rem; color: var(--text2); }
+
+/* ===== FAB ===== */
+#fab {
+  position: fixed;
+  bottom: calc(28px + env(safe-area-inset-bottom, 0));
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  background: var(--accent);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 26px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(10,132,255,0.5);
+  transition: transform var(--transition), box-shadow var(--transition);
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#fab:hover  { transform: scale(1.1) rotate(90deg); box-shadow: 0 6px 28px rgba(10,132,255,0.7); }
+#fab:active { transform: scale(0.94); }
+
+/* ===== Toast ===== */
+#toast {
+  position: fixed;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0));
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--bg3);
+  border: 0.5px solid var(--sep);
+  border-radius: var(--radius-md);
+  padding: 11px 18px;
+  font-size: 0.86rem;
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 90vw;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ===== Modal Base ===== */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 400;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s;
+}
+.modal-bg.open {
+  opacity: 1;
+  pointer-events: all;
+}
+/* デスクトップは中央寄せ */
+@media (min-width: 640px) {
+  .modal-bg { align-items: center; padding: 20px; }
+  .modal { border-radius: var(--radius-xl) !important; transform: scale(0.95) translateY(10px) !important; }
+  .modal-bg.open .modal { transform: scale(1) translateY(0) !important; }
+}
+.modal {
+  background: var(--bg2);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  width: 100%;
+  max-width: 640px;
+  max-height: 92dvh;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
+  box-shadow: var(--shadow-lg);
+  border: 0.5px solid var(--sep);
+  overflow: hidden;
+}
+.modal-bg.open .modal {
+  transform: translateY(0);
+}
+.modal-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--text3);
+  border-radius: 2px;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+}
+.modal-header {
+  padding: 16px 20px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 0.5px solid var(--sep);
+  flex-shrink: 0;
+}
+.modal-title-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+.modal-close {
+  width: 30px;
+  height: 30px;
+  background: var(--bg3);
+  border: none;
+  border-radius: 50%;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.modal-close:hover { background: rgba(255,69,58,0.15); color: var(--danger); }
+.modal-body {
+  padding: 18px 20px 28px;
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 個別モーダルサイズ */
+#folder-view-modal .modal { max-width: 880px; }
+#bm-modal .modal          { max-width: 520px; }
+#settings-modal .modal    { max-width: 520px; }
+#folder-name-modal .modal { max-width: 400px; }
+#pin-modal .modal         { max-width: 380px; text-align: center; }
+#confirm-modal .modal     { max-width: 360px; text-align: center; }
+#viewer-modal .modal      { max-width: 96vw; width: 96vw; max-height: 95dvh; height: 95dvh; }
+#viewer-frame-wrap        { flex: 1; padding: 0 16px 16px; overflow: hidden; display: flex; flex-direction: column; }
+#viewer-frame             { width: 100%; flex: 1; border: none; border-radius: var(--radius-md); background: #fff; }
+#pwa-modal .modal         { max-width: 700px; }
+
+/* ===== Form Elements ===== */
+.type-tabs {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+  background: var(--bg3);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  border: 0.5px solid var(--sep);
+}
+.type-tab {
+  padding: 10px 4px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--text2);
+}
+.type-tab .tab-icon { font-size: 18px; display: block; margin-bottom: 3px; }
+.type-tab.sel-html { background: var(--type-html); color: #fff; border-radius: var(--radius-sm); box-shadow: 0 2px 8px rgba(94,92,230,0.4); }
+.type-tab.sel-url  { background: var(--type-url);  color: #fff; border-radius: var(--radius-sm); box-shadow: 0 2px 8px rgba(50,173,230,0.4); }
+.type-tab.sel-bm   { background: var(--type-bm);   color: #fff; border-radius: var(--radius-sm); box-shadow: 0 2px 8px rgba(255,159,10,0.4); }
+.type-tab.sel-pwa  { background: var(--type-pwa);  color: #fff; border-radius: var(--radius-sm); box-shadow: 0 2px 8px rgba(48,209,88,0.4); }
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  background: var(--input-bg);
+  border: 0.5px solid var(--sep);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  color: var(--text);
+  font-size: 1rem;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color var(--transition), background var(--transition);
+  -webkit-appearance: none;
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder { color: var(--text3); }
+.form-group input:focus,
+.form-group textarea:focus { border-color: var(--accent); background: var(--bg2); }
+.form-group textarea { resize: vertical; min-height: 180px; font-family: 'SF Mono', 'Consolas', 'Monaco', monospace; font-size: 0.8rem; line-height: 1.6; }
+.form-hint { font-size: 0.73rem; color: var(--text2); margin-top: 5px; line-height: 1.5; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field-block { display: none; }
+.field-block.visible { display: block; }
+.icon-grid { display: grid; grid-template-columns: repeat(8,1fr); gap: 6px; margin-top: 6px; }
+.icon-btn {
+  background: var(--bg3);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-xs);
+  padding: 7px 4px;
+  font-size: 18px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  aspect-ratio: 1;
+}
+.icon-btn:hover { background: var(--bg4); border-color: var(--sep); }
+.icon-btn.selected { border-color: var(--accent); background: rgba(10,132,255,0.1); }
+.btn-primary {
+  width: 100%;
+  padding: 13px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  letter-spacing: -0.2px;
+}
+.btn-primary:hover  { opacity: 0.88; transform: translateY(-1px); }
+.btn-primary:active { opacity: 0.75; transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-primary.green  { background: var(--type-pwa); box-shadow: 0 2px 12px rgba(48,209,88,0.35); }
+.btn-primary.green:hover { box-shadow: 0 4px 18px rgba(48,209,88,0.5); }
+
+/* ===== Settings ===== */
+.settings-group {
+  background: var(--bg3);
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--sep);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.settings-group-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 14px 16px 10px;
+  border-bottom: 0.5px solid var(--sep);
+}
+.settings-row {
+  padding: 14px 16px;
+  border-bottom: 0.5px solid var(--sep);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row label {
+  display: block;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+.settings-row input {
+  width: 100%;
+  background: var(--bg2);
+  border: 0.5px solid var(--sep);
+  border-radius: var(--radius-xs);
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color var(--transition);
+}
+.settings-row input:focus { border-color: var(--accent); }
+.settings-row .form-hint { font-size: 0.72rem; color: var(--text2); margin-top: 4px; line-height: 1.4; }
+
+/* Theme Toggle */
+.theme-toggle {
+  display: flex;
+  background: var(--bg3);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  gap: 4px;
+  border: 0.5px solid var(--sep);
+}
+.theme-opt {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--text2);
+  transition: all 0.18s;
+}
+.theme-opt .t-icon { font-size: 20px; display: block; margin-bottom: 3px; }
+.theme-opt.active {
+  background: var(--bg2);
+  color: var(--text);
+  box-shadow: 0 1px 8px rgba(0,0,0,0.15);
+  border-radius: var(--radius-sm);
+}
+
+/* Storage bar */
+.storage-card {
+  background: var(--bg3);
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--sep);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.storage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.storage-used  { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px; }
+.storage-limit { font-size: 0.76rem; color: var(--text2); }
+.storage-bar-bg   { height: 7px; background: var(--bg4); border-radius: 100px; overflow: hidden; margin-bottom: 10px; }
+.storage-bar-fill { height: 100%; border-radius: 100px; background: var(--accent); transition: width 0.6s ease; }
+.storage-bar-fill.warn   { background: var(--warn); }
+.storage-bar-fill.danger { background: var(--danger); }
+.storage-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.75rem; color: var(--text2); }
+.storage-meta strong { color: var(--text); font-weight: 700; }
+
+/* Key card */
+.key-card {
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border: 0.5px solid var(--sep);
+}
+.key-label { font-size: 0.7rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
+.key-val { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; font-family: 'SF Mono','Consolas','Monaco',monospace; font-size: 0.8rem; color: var(--text); word-break: break-all; line-height: 1.5; }
+.key-copy { background: rgba(10,132,255,0.12); border: 0.5px solid rgba(10,132,255,0.25); border-radius: 6px; padding: 3px 10px; font-size: 0.72rem; color: var(--accent); cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.15s; font-family: var(--font); }
+.key-copy:hover { background: rgba(10,132,255,0.22); }
+
+/* ===== Confirm / Delete ===== */
+.confirm-icon { font-size: 48px; margin: 10px 0 14px; }
+.confirm-msg  { font-size: 0.9rem; color: var(--text2); line-height: 1.6; margin-bottom: 22px; }
+.confirm-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-cancel {
+  padding: 12px;
+  background: var(--bg3);
+  border: 0.5px solid var(--sep);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-size: 0.92rem;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-cancel:hover { background: var(--bg4); }
+.btn-delete {
+  padding: 12px;
+  background: rgba(255,69,58,0.12);
+  border: 0.5px solid rgba(255,69,58,0.3);
+  border-radius: var(--radius-md);
+  color: var(--danger);
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-delete:hover { background: rgba(255,69,58,0.22); }
+
+/* ===== PIN ===== */
+.pin-icon  { font-size: 52px; margin: 10px 0 10px; }
+.pin-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.3px; }
+.pin-sub   { font-size: 0.82rem; color: var(--text2); margin-bottom: 22px; line-height: 1.5; }
+.pin-dots  { display: flex; justify-content: center; gap: 16px; margin-bottom: 20px; }
+.pin-dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--bg4);
+  border: 1.5px solid var(--sep);
+  transition: all 0.15s;
+}
+.pin-dot.filled { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 8px rgba(10,132,255,0.5); }
+.pin-dot.error  { background: var(--danger); border-color: var(--danger); }
+.pin-keypad {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 10px;
+  max-width: 240px;
+  margin: 0 auto 14px;
+}
+.pin-key {
+  background: var(--bg3);
+  border: 0.5px solid var(--sep);
+  border-radius: var(--radius-md);
+  padding: 15px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.12s;
+  user-select: none;
+  color: var(--text);
+}
+.pin-key:hover  { background: var(--bg4); border-color: var(--accent); }
+.pin-key:active { transform: scale(0.92); }
+.pin-err-msg { font-size: 0.78rem; color: var(--danger); min-height: 18px; margin-bottom: 4px; }
+
+/* ===== BM Modal ===== */
+.bm-drag-zone {
+  text-align: center;
+  padding: 20px;
+  background: rgba(255,159,10,0.06);
+  border: 1.5px dashed rgba(255,159,10,0.3);
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+.bm-drag-zone p { font-size: 0.82rem; color: var(--text2); margin-bottom: 10px; }
+.bm-drag-link-big {
+  display: inline-block;
+  padding: 8px 20px;
+  background: rgba(255,159,10,0.15);
+  border-radius: var(--radius-xs);
+  color: var(--type-bm);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: grab;
+  border: 0.5px solid rgba(255,159,10,0.4);
+  font-size: 0.88rem;
+}
+.bm-code-block {
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-family: 'SF Mono','Consolas','Monaco',monospace;
+  font-size: 0.74rem;
+  color: var(--text);
+  line-height: 1.6;
+  word-break: break-all;
+  max-height: 140px;
+  overflow-y: auto;
+  border: 0.5px solid var(--sep);
+}
+
+/* ===== Folder View ===== */
+.fv-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.fv-emoji { font-size: 36px; }
+.fv-title { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.4px; }
+.fv-count { font-size: 0.78rem; color: var(--text2); margin-top: 2px; }
+.fv-grid  { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+
+/* ===== PWA Wizard ===== */
+.pwa-stepper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 22px;
+  overflow-x: auto;
+  padding: 4px 0;
+  scrollbar-width: none;
+}
+.pwa-stepper::-webkit-scrollbar { display: none; }
+.pwa-step-item { display: flex; align-items: center; }
+.pwa-step-inner { display: flex; flex-direction: column; align-items: center; }
+.pwa-step-circle {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  border: 1.5px solid var(--sep);
+  color: var(--text2);
+  background: var(--bg3);
+  transition: all 0.28s;
+  flex-shrink: 0;
+}
+.pwa-step-label { font-size: 10px; color: var(--text2); margin-top: 4px; white-space: nowrap; }
+.pwa-step-line  { width: 30px; height: 1.5px; background: var(--sep); flex-shrink: 0; margin-bottom: 14px; transition: background 0.28s; }
+.pwa-step-item.pwa-active .pwa-step-circle { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 12px rgba(10,132,255,0.5); }
+.pwa-step-item.pwa-active .pwa-step-label  { color: var(--accent); font-weight: 700; }
+.pwa-step-item.pwa-done  .pwa-step-circle  { background: var(--type-pwa); border-color: var(--type-pwa); color: #fff; }
+.pwa-step-item.pwa-done  .pwa-step-label   { color: var(--type-pwa); }
+.pwa-step-line.pwa-done { background: var(--type-pwa); }
+.pwa-card { display: none; }
+.pwa-card.pwa-active { display: block; animation: pwSlide 0.28s ease; }
+@keyframes pwSlide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+.info-box {
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  border: 0.5px solid;
+}
+.info-box.blue   { background: rgba(10,132,255,0.08);  border-color: rgba(10,132,255,0.2);  color: var(--text2); }
+.info-box.green  { background: rgba(48,209,88,0.08);   border-color: rgba(48,209,88,0.25);  color: var(--text2); }
+.info-box.yellow { background: rgba(255,214,10,0.08);  border-color: rgba(255,214,10,0.25); color: #ffd60a; }
+.info-box.red    { background: rgba(255,69,58,0.08);   border-color: rgba(255,69,58,0.3);   color: var(--danger); }
+.info-box a { color: var(--accent); text-decoration: none; }
+.info-box strong { color: var(--text); }
+
+.token-wrap { position: relative; }
+.token-wrap input { padding-right: 44px; font-family: 'SF Mono','Consolas','Monaco',monospace; }
+.token-vis { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text2); cursor: pointer; font-size: 16px; padding: 4px; }
+.color-pair { display: flex; align-items: center; gap: 8px; }
+.color-pair input[type="color"] { width: 42px; height: 38px; padding: 2px; border-radius: var(--radius-xs); background: var(--bg3); border: 0.5px solid var(--sep); cursor: pointer; flex-shrink: 0; }
+.display-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 8px;
+}
+.display-opt {
+  border: 1.5px solid var(--sep);
+  border-radius: var(--radius-sm);
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.18s;
+  background: var(--bg3);
+}
+.display-opt:hover { border-color: var(--accent); }
+.display-opt.sel  { border-color: var(--type-pwa); background: rgba(48,209,88,0.08); }
+.display-opt input[type="radio"] { display: none; }
+.d-icon { font-size: 20px; margin-bottom: 5px; }
+.d-name { font-size: 12px; font-weight: 700; }
+.d-desc { font-size: 10px; color: var(--text2); margin-top: 2px; }
+
+.icon-drop {
+  border: 1.5px dashed var(--sep);
+  border-radius: var(--radius-sm);
+  padding: 22px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.18s;
+  position: relative;
+}
+.icon-drop:hover, .icon-drop.dragover { border-color: var(--accent); background: rgba(10,132,255,0.05); }
+.icon-drop input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.icon-preview-img { width: 64px; height: 64px; border-radius: var(--radius-sm); object-fit: cover; border: 1.5px solid var(--sep); display: none; }
+.icon-chips { display: flex; gap: 7px; flex-wrap: wrap; }
+.icon-chip {
+  background: var(--bg3);
+  border: 0.5px solid var(--sep);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  color: var(--text2);
+}
+.icon-chip.ready { border-color: var(--type-pwa); color: var(--type-pwa); }
+
+.pwa-progress-bar { background: var(--bg3); border-radius: 100px; height: 6px; overflow: hidden; margin-bottom: 14px; }
+.pwa-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--type-pwa)); border-radius: 100px; transition: width 0.4s ease; width: 0%; }
+.pwa-steps-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.pwa-step-row { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text2); }
+.ps-icon {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; flex-shrink: 0;
+  background: var(--bg3); border: 0.5px solid var(--sep);
+}
+.pwa-step-row.ps-running .ps-icon { background: rgba(10,132,255,0.15); border-color: var(--accent); animation: pulse 1s infinite; }
+.pwa-step-row.ps-done    .ps-icon { background: rgba(48,209,88,0.12); border-color: var(--type-pwa); color: var(--type-pwa); }
+.pwa-step-row.ps-done    { color: var(--text); }
+.pwa-step-row.ps-error   .ps-icon { background: rgba(255,69,58,0.12); border-color: var(--danger); color: var(--danger); }
+.pwa-step-row.ps-error   { color: var(--danger); }
+.pwa-step-row.ps-skip    { opacity: 0.4; }
+.deploy-summary {
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  line-height: 2.1;
+  border: 0.5px solid var(--sep);
+}
+
+.pwa-success-wrap { text-align: center; padding: 12px 0 18px; }
+.pwa-success-icon { font-size: 58px; margin-bottom: 12px; animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275); }
+@keyframes popIn { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+.pwa-success-title {
+  font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px;
+  background: linear-gradient(135deg, var(--type-pwa), #6ee7b7);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.pwa-url-card {
+  background: var(--bg3);
+  border: 0.5px solid var(--type-pwa);
+  border-radius: var(--radius-md);
+  padding: 13px 16px;
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.pwa-url-text { flex: 1; font-family: 'SF Mono','Consolas','Monaco',monospace; font-size: 12px; color: var(--type-pwa); word-break: break-all; }
+.pwa-copy-btn {
+  background: rgba(48,209,88,0.12); border: 0.5px solid rgba(48,209,88,0.3);
+  color: var(--type-pwa); border-radius: var(--radius-xs); padding: 7px 12px;
+  font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap;
+  transition: all 0.18s; font-family: var(--font);
+}
+.pwa-open-btn {
+  background: rgba(10,132,255,0.12); border: 0.5px solid rgba(10,132,255,0.3);
+  color: var(--accent); border-radius: var(--radius-xs); padding: 7px 12px;
+  font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap;
+  text-decoration: none; display: inline-flex; align-items: center;
+  transition: all 0.18s; font-family: var(--font);
+}
+#pwa-qrcode { display: flex; justify-content: center; margin: 12px 0; }
+#pwa-qrcode canvas, #pwa-qrcode img { border-radius: var(--radius-sm); border: 1.5px solid var(--sep); }
+.install-guide { background: var(--bg3); border-radius: var(--radius-md); padding: 14px 16px; margin: 10px 0; }
+.install-guide h3 { font-size: 12px; font-weight: 700; color: var(--text2); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+.install-step { display: flex; gap: 10px; margin-bottom: 10px; font-size: 12px; line-height: 1.5; }
+.install-num { width: 20px; height: 20px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; flex-shrink: 0; margin-top: 1px; color: #fff; }
+.pwa-btn-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; flex-wrap: wrap; }
+.btn-secondary {
+  background: var(--bg3); color: var(--text);
+  border: 0.5px solid var(--sep); border-radius: var(--radius-sm);
+  padding: 11px 18px; font-size: 0.88rem; font-weight: 600;
+  font-family: var(--font); cursor: pointer; transition: all 0.18s;
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Spinner */
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: none; flex-shrink: 0;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text3); border-radius: 2px; }
+</style>
+
+  <link rel="manifest" href="/myappstorebeta/manifest.json">
+  <meta name="theme-color" content="#7c6aff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MyAppStore">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="/myappstorebeta/icon-192.png">
+  <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/myappstorebeta/sw.js').catch(()=>{});});}</script>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🗂</div>
+      <div class="logo-text">App<span>Vault</span></div>
+    </div>
+    <div class="header-right">
+      <div class="db-chip">
+        <div class="db-dot loading" id="db-dot"></div>
+        <span id="db-label">接続中</span>
+      </div>
+      <span class="count-pill" id="count-badge">0 apps</span>
+      <button class="hd-icon-btn" onclick="openSettings()" title="設定">⚙️</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== Search Bar ===== -->
+<div class="search-section">
+  <div class="search-inner">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="アプリを検索..." oninput="renderAll()" />
+    </div>
+    <select id="sort-select" onchange="renderAll()">
+      <option value="newest">新しい順</option>
+      <option value="oldest">古い順</option>
+      <option value="name">名前順</option>
+    </select>
+    <div class="segment-wrap" id="seg-wrap">
+      <button class="seg-btn seg-all active-all" data-filter="all" onclick="setFilter('all')">すべて</button>
+      <button class="seg-btn seg-html" data-filter="html" onclick="setFilter('html')"><span class="seg-dot"></span>HTML</button>
+      <button class="seg-btn seg-url"  data-filter="url"  onclick="setFilter('url')"><span class="seg-dot"></span>URL</button>
+      <button class="seg-btn seg-bm"   data-filter="bm"   onclick="setFilter('bm')"><span class="seg-dot"></span>ブックマークレット</button>
+      <button class="seg-btn seg-pwa"  data-filter="pwa"  onclick="setFilter('pwa')"><span class="seg-dot"></span>PWA</button>
+      <button class="btn-new-folder"   onclick="openFolderNameModal(null)">📁 新しいフォルダ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Main ===== -->
+<main>
+  <div id="main-grid"></div>
+</main>
+
+<button id="fab" onclick="openRegisterModal(null)" title="アプリを登録">＋</button>
+
+<!-- ===== 登録/編集モーダル ===== -->
+<div class="modal-bg" id="register-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title-text" id="modal-title">📥 アプリを登録</span>
+      <button class="modal-close" onclick="closeModal('register-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="type-tabs" id="type-tabs">
+        <div class="type-tab sel-html" data-type="html" onclick="selectType('html')"><span class="tab-icon">📄</span>HTML</div>
+        <div class="type-tab" data-type="url"  onclick="selectType('url')"><span class="tab-icon">🔗</span>URL</div>
+        <div class="type-tab" data-type="bm"   onclick="selectType('bm')"><span class="tab-icon">🔖</span>BM</div>
+        <div class="type-tab" data-type="pwa"  onclick="selectType('pwa')"><span class="tab-icon">⚡</span>PWA</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>アプリ名 *</label>
+          <input type="text" id="f-name" placeholder="例: カラーピッカー" />
+        </div>
+        <div class="form-group">
+          <label>アイコン絵文字</label>
+          <input type="text" id="f-icon-input" placeholder="📱" maxlength="4" oninput="selectIconFromInput(this.value)" style="text-align:center;font-size:1.4rem;" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>よく使う絵文字</label>
+        <div class="icon-grid" id="icon-grid"></div>
+      </div>
+      <div class="form-group">
+        <label>説明（任意）</label>
+        <input type="text" id="f-desc" placeholder="このアプリの説明を一言で..." />
+      </div>
+      <div class="form-group" id="folder-assign-group">
+        <label>フォルダ（任意）</label>
+        <select id="f-folder"><option value="">フォルダなし（トップに表示）</option></select>
+      </div>
+      <div class="field-block visible" id="field-html">
+        <div class="form-group">
+          <label>HTMLコード *</label>
+          <textarea id="f-html" placeholder="&lt;!DOCTYPE html&gt; から..."></textarea>
+        </div>
+      </div>
+      <div class="field-block" id="field-url">
+        <div class="form-group">
+          <label>URL *</label>
+          <input type="url" id="f-url" placeholder="https://your-app.example.com" />
+          <p class="form-hint">外部URLを登録します。タップで新しいタブで開きます。</p>
+        </div>
+      </div>
+      <div class="field-block" id="field-bm">
+        <div class="form-group">
+          <label>ブックマークレットコード *</label>
+          <textarea id="f-bm" placeholder="javascript:(function(){...})()" style="min-height:110px;"></textarea>
+          <p class="form-hint"><code style="background:var(--bg3);padding:1px 5px;border-radius:4px;">javascript:</code> から始まるコードを入力してください。</p>
+        </div>
+      </div>
+      <div class="field-block" id="field-pwa">
+        <div class="info-box green">
+          ⚡ <strong>PWAデプロイ</strong>モードです。下のボタンからウィザードを開き、HTMLをペーストしてGitHub PagesへPWA化・デプロイできます。完了後は自動的に倉庫へ登録されます。
+        </div>
+        <button class="btn-primary green" onclick="openPwaWizard()">⚡ PWAデプロイウィザードを開く</button>
+      </div>
+      <button class="btn-primary" id="save-btn" onclick="saveApp()" style="margin-top:10px;">
+        <span class="spinner" id="save-spinner"></span>
+        <span id="save-label">💾 保存する</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PWA Wizard ===== -->
+<div class="modal-bg" id="pwa-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title-text">⚡ PWAデプロイウィザード</span>
+      <button class="modal-close" onclick="closePwaModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="pwa-stepper" id="pwa-stepper">
+        <div class="pwa-step-item pwa-active" id="psi-0"><div class="pwa-step-inner"><div class="pwa-step-circle">1</div><div class="pwa-step-label">GitHub</div></div></div>
+        <div class="pwa-step-line" id="psl-0"></div>
+        <div class="pwa-step-item" id="psi-1"><div class="pwa-step-inner"><div class="pwa-step-circle">2</div><div class="pwa-step-label">HTML</div></div></div>
+        <div class="pwa-step-line" id="psl-1"></div>
+        <div class="pwa-step-item" id="psi-2"><div class="pwa-step-inner"><div class="pwa-step-circle">3</div><div class="pwa-step-label">設定</div></div></div>
+        <div class="pwa-step-line" id="psl-2"></div>
+        <div class="pwa-step-item" id="psi-3"><div class="pwa-step-inner"><div class="pwa-step-circle">4</div><div class="pwa-step-label">デプロイ</div></div></div>
+        <div class="pwa-step-line" id="psl-3"></div>
+        <div class="pwa-step-item" id="psi-4"><div class="pwa-step-inner"><div class="pwa-step-circle">5</div><div class="pwa-step-label">完了</div></div></div>
+      </div>
+
+      <!-- Step 1: GitHub -->
+      <div class="pwa-card pwa-active" id="pwa-step-0">
+        <div class="info-box blue">
+          💡 <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a> → <strong>Tokens (classic)</strong> → <strong>「repo」スコープのみ</strong>チェックして生成。<br>設定済みのTokenがあれば自動引き継ぎされます。
+        </div>
+        <div class="form-group">
+          <label>Personal Access Token (Classic)</label>
+          <div class="token-wrap">
+            <input type="password" id="pw-token" placeholder="ghp_... （設定済みなら空欄でOK）" />
+            <button class="token-vis" onclick="pwToggleVis()">👁</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>リポジトリ名 *</label>
+            <input type="text" id="pw-repo" placeholder="my-pwa-app" oninput="pwSanitizeRepo(this)" />
+          </div>
+          <div class="form-group">
+            <label>公開設定</label>
+            <select id="pw-visibility">
+              <option value="false">Public（無料・推奨）</option>
+              <option value="true">Private（有料プラン必要）</option>
+            </select>
+          </div>
+        </div>
+        <div class="info-box yellow" id="pw-private-warn" style="display:none;">⚠️ PrivateリポジトリでのGitHub Pages利用にはGitHub Proが必要です。</div>
+        <div class="info-box red" id="pw-step0-err" style="display:none;"></div>
+        <div class="pwa-btn-row">
+          <button class="btn-primary green" onclick="pwVerifyToken()">接続確認 &amp; 次へ →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: HTML -->
+      <div class="pwa-card" id="pwa-step-1">
+        <div class="form-group">
+          <label>HTMLソースコード *</label>
+          <textarea id="pw-html" placeholder="&lt;!DOCTYPE html&gt;&#10;&lt;html&gt;...&lt;/html&gt;" style="min-height:200px;font-family:'SF Mono','Consolas','Monaco',monospace;font-size:0.8rem;" spellcheck="false"></textarea>
+        </div>
+        <div class="info-box blue" id="pw-html-info" style="display:none;"></div>
+        <div class="pwa-btn-row">
+          <button class="btn-secondary" onclick="pwGoStep(0)">← 戻る</button>
+          <button class="btn-primary green" onclick="pwValidateHtml()">次へ →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: 設定 -->
+      <div class="pwa-card" id="pwa-step-2">
+        <div class="form-row">
+          <div class="form-group">
+            <label>アプリ名（フル）*</label>
+            <input type="text" id="pw-appname" placeholder="My Business App" />
+          </div>
+          <div class="form-group">
+            <label>ショートネーム *</label>
+            <input type="text" id="pw-shortname" placeholder="MyApp" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>アプリの説明</label>
+          <input type="text" id="pw-desc" placeholder="業務用ツール" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>テーマカラー</label>
+            <div class="color-pair">
+              <input type="color" id="pw-theme" value="#0a84ff" oninput="pwSyncColor('pw-theme','pw-theme-hex')">
+              <input type="text" id="pw-theme-hex" value="#0a84ff" oninput="pwSyncHex('pw-theme-hex','pw-theme')" style="flex:1;">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>背景カラー</label>
+            <div class="color-pair">
+              <input type="color" id="pw-bg" value="#000000" oninput="pwSyncColor('pw-bg','pw-bg-hex')">
+              <input type="text" id="pw-bg-hex" value="#000000" oninput="pwSyncHex('pw-bg-hex','pw-bg')" style="flex:1;">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>表示モード</label>
+          <div class="display-grid">
+            <label class="display-opt sel" onclick="pwSelectDisplay(this)"><input type="radio" name="pw-display" value="standalone" checked><div class="d-icon">📱</div><div class="d-name">Standalone</div><div class="d-desc">アプリ風・推奨</div></label>
+            <label class="display-opt" onclick="pwSelectDisplay(this)"><input type="radio" name="pw-display" value="fullscreen"><div class="d-icon">⛶</div><div class="d-name">Fullscreen</div><div class="d-desc">全画面</div></label>
+            <label class="display-opt" onclick="pwSelectDisplay(this)"><input type="radio" name="pw-display" value="minimal-ui"><div class="d-icon">🌐</div><div class="d-name">Minimal UI</div><div class="d-desc">最小限のUI</div></label>
+            <label class="display-opt" onclick="pwSelectDisplay(this)"><input type="radio" name="pw-display" value="browser"><div class="d-icon">🖥</div><div class="d-name">Browser</div><div class="d-desc">通常ブラウザ</div></label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>アプリアイコン（推奨512×512px・PNG・スキップ可）</label>
+          <div class="icon-drop" id="pw-icon-drop" ondragover="pwDragOver(event)" ondragleave="pwDragLeave()" ondrop="pwDrop(event)">
+            <input type="file" id="pw-icon-file" accept="image/*" onchange="pwHandleIcon(this.files[0])">
+            <div id="pw-icon-upload-content">
+              <div style="font-size:28px;margin-bottom:6px;">🖼</div>
+              <div style="font-size:12px;font-weight:600;color:var(--text2);">クリックまたはドラッグ＆ドロップ</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:3px;">PNG推奨・512×512px以上</div>
+            </div>
+            <div id="pw-icon-preview-content" style="display:none;">
+              <div style="display:flex;align-items:center;gap:14px;justify-content:center;">
+                <img class="icon-preview-img" id="pw-icon-img" src="" alt="">
+                <div class="icon-chips">
+                  <div class="icon-chip" id="pw-chip-192">192px ⏳</div>
+                  <div class="icon-chip" id="pw-chip-512">512px ⏳</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pwa-btn-row">
+          <button class="btn-secondary" onclick="pwGoStep(1)">← 戻る</button>
+          <button class="btn-primary green" onclick="pwValidateSettings()">確認してデプロイ →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: デプロイ -->
+      <div class="pwa-card" id="pwa-step-3">
+        <div class="deploy-summary" id="pwa-deploy-summary"></div>
+        <div class="info-box red" id="pw-deploy-err" style="display:none;"></div>
+        <div id="pwa-progress-wrap" style="display:none;">
+          <div class="pwa-progress-bar"><div class="pwa-progress-fill" id="pwa-progress-fill"></div></div>
+          <div class="pwa-steps-list" id="pwa-step-rows"></div>
+        </div>
+        <div class="pwa-btn-row" id="pwa-deploy-btns">
+          <button class="btn-secondary" onclick="pwGoStep(2)">← 戻る</button>
+          <button class="btn-primary green" id="pwa-deploy-btn" onclick="pwStartDeploy()">🚀 デプロイ開始</button>
+        </div>
+      </div>
+
+      <!-- Step 5: 完了 -->
+      <div class="pwa-card" id="pwa-step-4">
+        <div class="pwa-success-wrap">
+          <div class="pwa-success-icon">🎉</div>
+          <div class="pwa-success-title">デプロイ完了！</div>
+          <p style="color:var(--text2);font-size:12px;margin-top:4px;">倉庫への登録も自動で完了しました</p>
+        </div>
+        <div class="pwa-url-card">
+          <div class="pwa-url-text" id="pwa-final-url">-</div>
+          <button class="pwa-copy-btn" onclick="pwCopyUrl()">📋 コピー</button>
+          <a id="pwa-open-btn" href="#" target="_blank" class="pwa-open-btn">🔗 開く</a>
+        </div>
+        <div id="pwa-qrcode"></div>
+        <div class="install-guide">
+          <h3>📱 iPhoneへのインストール手順</h3>
+          <div class="install-step"><div class="install-num">1</div><div>上のURLをiPhoneの<strong>Safari</strong>で開く</div></div>
+          <div class="install-step"><div class="install-num">2</div><div>404が出る場合は1〜2分待ってリロード</div></div>
+          <div class="install-step"><div class="install-num">3</div><div>共有ボタン（□↑）→<strong>「ホーム画面に追加」</strong>をタップ</div></div>
+        </div>
+        <div class="pwa-btn-row" style="justify-content:center;">
+          <button class="btn-secondary" onclick="closePwaModal()">✕ 閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== フォルダ名前入力 ===== -->
+<div class="modal-bg" id="folder-name-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title-text" id="folder-name-title">📁 新しいフォルダ</span>
+      <button class="modal-close" onclick="closeModal('folder-name-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>フォルダ名 *</label><input type="text" id="fn-name" placeholder="例: ツール系" /></div>
+        <div class="form-group"><label>絵文字アイコン</label><input type="text" id="fn-icon" placeholder="📁" maxlength="4" style="text-align:center;font-size:1.4rem;" /></div>
+      </div>
+      <button class="btn-primary" onclick="saveFolder()">💾 保存する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== フォルダ展開 ===== -->
+<div class="modal-bg" id="folder-view-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span id="fv-emoji" style="font-size:28px;">📁</span>
+        <div>
+          <div id="fv-name"  style="font-size:1.1rem;font-weight:800;letter-spacing:-0.3px;">フォルダ</div>
+          <div id="fv-count" style="font-size:0.76rem;color:var(--text2);">0 個のアプリ</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal('folder-view-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fv-grid" id="fv-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HTMLビューア ===== -->
+<div class="modal-bg" id="viewer-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title-text" id="viewer-title">アプリを起動</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="icon-action" onclick="openInNewTab()" style="font-size:16px;width:34px;height:34px;">↗️</button>
+        <button class="modal-close" onclick="closeViewer()">✕</button>
+      </div>
+    </div>
+    <div id="viewer-frame-wrap">
+      <iframe id="viewer-frame" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-downloads"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BM詳細 ===== -->
+<div class="modal-bg" id="bm-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title-text" id="bm-modal-title">🔖 ブックマークレット</span>
+      <button class="modal-close" onclick="closeModal('bm-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="bm-drag-zone">
+        <p>👆 下のボタンをブラウザのブックマークバーにドラッグして登録</p>
+        <a id="bm-detail-link" href="#" class="bm-drag-link-big" onclick="return false;">🔖 ドラッグしてブックマークバーへ</a>
+      </div>
+      <div style="margin-bottom:6px;font-size:0.73rem;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">コード</div>
+      <div class="bm-code-block" id="bm-detail-code"></div>
+      <button class="btn-primary" style="margin-top:14px;" onclick="copyBmCode()">📋 コードをコピー</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 設定 ===== -->
+<div class="modal-bg" id="settings-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title-text">⚙️ 設定</span>
+      <button class="modal-close" onclick="closeModal('settings-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- テーマ -->
+      <div class="form-group">
+        <label>外観モード</label>
+        <div class="theme-toggle">
+          <button class="theme-opt active" id="theme-dark"  onclick="setTheme('dark')"><span class="t-icon">🌙</span>ダーク</button>
+          <button class="theme-opt" id="theme-light" onclick="setTheme('light')"><span class="t-icon">☀️</span>ライト</button>
+        </div>
+      </div>
+
+      <!-- Token / PIN / Gist -->
+      <div class="settings-group">
+        <div class="settings-group-title">🔐 Token・PIN・Gist 設定</div>
+        <div class="settings-row">
+          <label>GitHub Personal Access Token</label>
+          <input type="password" id="s-token" placeholder="ghp_..." autocomplete="off" />
+          <p class="form-hint">入力後「保存」するとPINで暗号化してGistに保存されます。全端末で同期されます。</p>
+        </div>
+        <div class="settings-row">
+          <label>PIN（4桁）</label>
+          <input type="password" id="s-pin" placeholder="変更する場合のみ入力" maxlength="4" inputmode="numeric" />
+          <p class="form-hint">変更する場合のみ入力してください。空白なら現在のPINを維持します。</p>
+        </div>
+        <div class="settings-row">
+          <label>Gist ID</label>
+          <input type="text" id="s-gist" placeholder="2c2638d673da5d7f1d0762c8cb518fd1" />
+        </div>
+        <div class="settings-row">
+          <label>データファイル名</label>
+          <input type="text" id="s-file" placeholder="webapp-warehouse.json" />
+        </div>
+      </div>
+      <button class="btn-primary" onclick="saveSettings()">💾 保存して再読み込み</button>
+
+      <!-- 使用容量 -->
+      <div style="margin-top:22px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">📊 Gist 使用容量</div>
+        <div class="storage-card" style="margin-bottom:0;">
+          <div class="storage-header">
+            <div class="storage-used" id="st-used">-</div>
+            <div class="storage-limit">推奨上限: 10 MB</div>
+          </div>
+          <div class="storage-bar-bg"><div class="storage-bar-fill" id="st-bar" style="width:0%"></div></div>
+          <div class="storage-meta">
+            <div>アプリ数: <strong id="st-apps">-</strong></div>
+            <div>フォルダ数: <strong id="st-folders">-</strong></div>
+            <div>残り: <strong id="st-remain">-</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 接続情報 -->
+      <div style="margin-top:22px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;">📋 接続情報</div>
+        <div class="key-card">
+          <div class="key-label">Gist ID</div>
+          <div class="key-val"><span id="st-gist-disp">-</span><button class="key-copy" onclick="copyText(getCfg().gistId,'Gist IDをコピーしました')">コピー</button></div>
+        </div>
+        <div class="key-card">
+          <div class="key-label">Token状態</div>
+          <div class="key-val"><span id="st-token-status">-</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== 削除確認 ===== -->
+<div class="modal-bg" id="confirm-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-body" style="text-align:center;">
+      <div class="confirm-icon">🗑️</div>
+      <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:8px;">削除しますか？</h2>
+      <p class="confirm-msg" id="confirm-msg"></p>
+      <div class="confirm-row">
+        <button class="btn-cancel" onclick="closeModal('confirm-modal')">キャンセル</button>
+        <button class="btn-delete" id="confirm-delete-btn">削除する</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PIN ===== -->
+<div class="modal-bg" id="pin-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-body" style="text-align:center;">
+      <div class="pin-icon" id="pin-icon">🔐</div>
+      <div class="pin-title" id="pin-title">PINを入力</div>
+      <div class="pin-sub"   id="pin-sub">4桁のPINを入力してください</div>
+      <div class="pin-dots">
+        <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+      </div>
+      <div class="pin-err-msg" id="pin-err"></div>
+      <div class="pin-keypad">
+        <button class="pin-key" onclick="pinKey('1')">1</button>
+        <button class="pin-key" onclick="pinKey('2')">2</button>
+        <button class="pin-key" onclick="pinKey('3')">3</button>
+        <button class="pin-key" onclick="pinKey('4')">4</button>
+        <button class="pin-key" onclick="pinKey('5')">5</button>
+        <button class="pin-key" onclick="pinKey('6')">6</button>
+        <button class="pin-key" onclick="pinKey('7')">7</button>
+        <button class="pin-key" onclick="pinKey('8')">8</button>
+        <button class="pin-key" onclick="pinKey('9')">9</button>
+        <button class="pin-key" onclick="pinClear()">✕</button>
+        <button class="pin-key" onclick="pinKey('0')">0</button>
+        <button class="pin-key" onclick="pinBack()">⌫</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// ================================================================
+// 定数
+// ================================================================
+const DEFAULT_GIST_ID  = '2c2638d673da5d7f1d0762c8cb518fd1';
+const DEFAULT_FILE     = 'webapp-warehouse.json';
+const TOKEN_FILE       = 'ww-token.enc';
+const GIST_LIMIT_BYTES = 10 * 1024 * 1024;
+
+// ================================================================
+// Config
+// ================================================================
+function getCfg() { try { const s = localStorage.getItem('ww-cfg'); if (s) return JSON.parse(s); } catch(e){} return { gistId: DEFAULT_GIST_ID, file: DEFAULT_FILE }; }
+function setCfg(cfg) { localStorage.setItem('ww-cfg', JSON.stringify(cfg)); }
+function getAPI() { return `https://api.github.com/gists/${getCfg().gistId}`; }
+
+// ================================================================
+// AES暗号化
+// ================================================================
+async function pinToKey(pin) { const enc = new TextEncoder(); return crypto.subtle.importKey('raw', enc.encode(pin.padEnd(16,'0')), 'AES-GCM', false, ['encrypt','decrypt']); }
+async function encryptToken(token, pin) { const key = await pinToKey(pin); const enc = new TextEncoder(); const iv = crypto.getRandomValues(new Uint8Array(12)); const ct = await crypto.subtle.encrypt({name:'AES-GCM',iv}, key, enc.encode(token)); const combined = new Uint8Array(iv.byteLength + ct.byteLength); combined.set(iv, 0); combined.set(new Uint8Array(ct), iv.byteLength); return btoa(String.fromCharCode(...combined)); }
+async function decryptToken(encB64, pin) { try { const key = await pinToKey(pin); const combined = Uint8Array.from(atob(encB64), c => c.charCodeAt(0)); const iv = combined.slice(0, 12); const ct = combined.slice(12); const pt = await crypto.subtle.decrypt({name:'AES-GCM',iv}, key, ct); return new TextDecoder().decode(pt); } catch(e) { return null; } }
+
+// ================================================================
+// Token管理
+// ================================================================
+let _token = '';
+async function saveEncryptedToken(ghToken, pin) {
+  const enc = await encryptToken(ghToken, pin);
